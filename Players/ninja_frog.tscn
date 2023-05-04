@@ -1,0 +1,122 @@
+[gd_scene load_steps=14 format=3 uid="uid://jc5bq2hxnbri"]
+
+[ext_resource type="Script" path="res://Players/ninja_frog.gd" id="1_bjl68"]
+[ext_resource type="Texture2D" uid="uid://c2pqa6u2sj835" path="res://Main Characters/Ninja Frog/Idle (32x32).png" id="1_nqxc8"]
+[ext_resource type="Texture2D" uid="uid://twd5xoroxa5x" path="res://Main Characters/Ninja Frog/Run (32x32).png" id="3_u7dap"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jxu2l"]
+size = Vector2(20, 22.5)
+
+[sub_resource type="Animation" id="Animation_ukx23"]
+resource_name = "player_idle"
+length = 1.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("idle_frog:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+}
+
+[sub_resource type="Animation" id="Animation_5c12y"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("idle_frog:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("run_frog:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_bje0t"]
+resource_name = "player_run"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("run_frog:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dh4fx"]
+_data = {
+"RESET": SubResource("Animation_5c12y"),
+"player_idle": SubResource("Animation_ukx23"),
+"player_run": SubResource("Animation_bje0t")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2l5x1"]
+animation = &"player_idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_sedq3"]
+animation = &"player_run"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_t8ub6"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_vmrgn"]
+states/player_idle/node = SubResource("AnimationNodeAnimation_2l5x1")
+states/player_idle/position = Vector2(335, 97.75)
+states/player_run/node = SubResource("AnimationNodeAnimation_sedq3")
+states/player_run/position = Vector2(519, 98.875)
+transitions = ["Start", "player_idle", SubResource("AnimationNodeStateMachineTransition_t8ub6")]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id="AnimationNodeStateMachinePlayback_nc13h"]
+
+[node name="NinjaFrog" type="CharacterBody2D"]
+script = ExtResource("1_bjl68")
+
+[node name="idle_frog" type="Sprite2D" parent="."]
+texture = ExtResource("1_nqxc8")
+hframes = 11
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4.25)
+shape = SubResource("RectangleShape2D_jxu2l")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_dh4fx")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeStateMachine_vmrgn")
+anim_player = NodePath("../AnimationPlayer")
+active = true
+parameters/playback = SubResource("AnimationNodeStateMachinePlayback_nc13h")
+
+[node name="run_frog" type="Sprite2D" parent="."]
+position = Vector2(25, 4)
+texture = ExtResource("3_u7dap")
+hframes = 12
+frame = 1
